@@ -1,16 +1,19 @@
+// @flow
 import React, { Component } from "react";
+import { Router } from "@reach/router";
 
-class App extends Component {
+import Home from "./Home";
+
+type Props = {};
+
+type State = {};
+
+class App extends Component<Props, State> {
   render() {
     return (
-      <div>
-        <header>
-          <h1>Welcome to React</h1>
-        </header>
-        <p>
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
+      <Router>
+        <Home path="/" />
+      </Router>
     );
   }
 }
