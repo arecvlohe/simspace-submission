@@ -1,5 +1,5 @@
 // @flow
-import React, { Fragment } from "react";
+import React from "react";
 import styled from "styled-components";
 import { Router, Link } from "@reach/router";
 
@@ -48,11 +48,12 @@ const SearchInput = styled.input.attrs({ type: "search" })`
   box-shadow: 2px 2px 1px 1px #ddd;
 `;
 
-const Grid3x4 = styled.div`
+const Grid4x3 = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-column-gap: 20px;
   grid-row-gap: 10px;
+  min-height: 110px;
 `;
 
 const BreedLink = styled(ActiveLink)`
@@ -76,18 +77,35 @@ const BreedLink = styled(ActiveLink)`
   }
 `;
 
+const getBreedName = breed =>
+  breed.variant ? `${breed.variant} ${breed.breed}` : breed.breed;
+
 type Props = {};
 
-type State = {};
+type State = {
+  search: string
+};
 
 export default class extends React.Component<Props, State> {
+  state = {
+    search: ""
+  };
+
+  handleChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
+    this.setState({ search: e.target.value });
+  };
+
   render() {
     return (
       <div>
         <HeaderLayout>
           <Header>Dogs!</Header>
           <SearchWrapper>
-            <SearchInput placeholder="Search" />
+            <SearchInput
+              placeholder="Search"
+              value={this.state.search}
+              onChange={this.handleChange}
+            />
           </SearchWrapper>
         </HeaderLayout>
         <Fetch url={api.all}>
@@ -103,33 +121,50 @@ export default class extends React.Component<Props, State> {
               );
 
             if (data) {
+              const filterAndSortBreeds = Object.keys(data.message)
+                .reduce((acc, breed) => {
+                  if (data.message[breed].length) {
+                    data.message[breed].forEach(variant => {
+                      acc.push({ breed, variant });
+                    });
+                  }
+
+                  acc.push({ breed, variant: undefined });
+
+                  return acc;
+                }, [])
+                .filter(({ breed, variant }) => {
+                  return `${variant || ""} ${breed}`
+                    .trim()
+                    .toLowerCase()
+                    .includes(this.state.search.toLowerCase().trim());
+                })
+                .sort((a, b) => {
+                  const breedA = getBreedName(a);
+                  const breedB = getBreedName(b);
+
+                  return breedA < breedB ? -1 : 1;
+                })
+                .slice(0, 12);
+
               return (
-                <Grid3x4>
-                  {Object.keys(data.message)
-                    .slice(0, 12)
-                    .map(breed => {
-                      if (data.message[breed].length) {
-                        return (
-                          <Fragment>
-                            {data.message[breed].map(variant => {
-                              return (
-                                <div key={variant}>
-                                  <BreedLink to={`${breed}-${variant}`}>
-                                    {variant} {breed}
-                                  </BreedLink>
-                                </div>
-                              );
-                            })}
-                          </Fragment>
-                        );
-                      }
+                <Grid4x3>
+                  {filterAndSortBreeds.length < 1 ? (
+                    <div>No breeds found</div>
+                  ) : (
+                    filterAndSortBreeds.map(({ breed, variant }) => {
                       return (
-                        <div key={breed}>
-                          <BreedLink to={breed}>{breed}</BreedLink>
+                        <div key={`${breed}-${variant || ""}`}>
+                          <BreedLink
+                            to={variant ? `${breed}-${variant}` : breed}
+                          >
+                            {variant} {breed}
+                          </BreedLink>
                         </div>
                       );
-                    })}
-                </Grid3x4>
+                    })
+                  )}
+                </Grid4x3>
               );
             }
           }}
