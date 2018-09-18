@@ -1,11 +1,30 @@
 // @flow
 import React, { Fragment } from "react";
 import styled from "styled-components";
+import { Router, Link } from "@reach/router";
 
 import Fetch from "./Fetch";
+import Images from "./Images";
 import api from "./api";
 
 import type { RenderProps, BreedsResponse } from "./models";
+
+const isActive = ({ isCurrent }) => {
+  return isCurrent
+    ? {
+        style: {
+          background: "rgb(181,126,255)",
+          // eslint-disable-next-line no-dupe-keys
+          background:
+            "linear-gradient(90deg, rgba(181,126,255,1) 0%, rgba(97,88,255,1) 50%)"
+        }
+      }
+    : null;
+};
+
+const ActiveLink = ({ className, ...props }) => (
+  <Link className={className} getProps={isActive} {...props} />
+);
 
 const HeaderLayout = styled.div`
   display: flex;
@@ -36,13 +55,21 @@ const Grid3x4 = styled.div`
   grid-row-gap: 10px;
 `;
 
-const BreedButton = styled.button.attrs({ type: "button" })`
+const BreedLink = styled(ActiveLink)`
   width: 100%;
+  display: flex;
   background-color: #ddd;
+  text-decoration: none;
+  justify-content: center;
+  align-items: center;
   border: 0;
   color: #222;
   height: 30px;
   border-radius: 3px;
+
+  &.active {
+    color: red;
+  }
 
   &:hover {
     cursor: pointer;
@@ -86,10 +113,10 @@ export default class extends React.Component<Props, State> {
                           <Fragment>
                             {data.message[breed].map(variant => {
                               return (
-                                <div>
-                                  <BreedButton>
+                                <div key={variant}>
+                                  <BreedLink to={`${breed}-${variant}`}>
                                     {variant} {breed}
-                                  </BreedButton>
+                                  </BreedLink>
                                 </div>
                               );
                             })}
@@ -97,8 +124,8 @@ export default class extends React.Component<Props, State> {
                         );
                       }
                       return (
-                        <div>
-                          <BreedButton>{breed}</BreedButton>
+                        <div key={breed}>
+                          <BreedLink to={breed}>{breed}</BreedLink>
                         </div>
                       );
                     })}
@@ -107,6 +134,9 @@ export default class extends React.Component<Props, State> {
             }
           }}
         </Fetch>
+        <Router>
+          <Images path=":breed" />
+        </Router>
       </div>
     );
   }

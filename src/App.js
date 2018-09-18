@@ -12,7 +12,7 @@ class App extends Component<Props, State> {
   render() {
     return (
       <Router>
-        <Home path="/" />
+        <Home path="/*" />
       </Router>
     );
   }
