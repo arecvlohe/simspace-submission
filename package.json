@@ -6,6 +6,7 @@
     "@reach/router": "^1.1.1",
     "add": "^2.0.6",
     "normalize.css": "^8.0.0",
+    "ramda": "^0.25.0",
     "react": "^16.5.1",
     "react-dom": "^16.5.1",
     "react-hot-keys": "^1.2.2",

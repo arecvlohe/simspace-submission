@@ -2,8 +2,9 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 import LazyLoad from "react-lazyload";
-import { get, set } from "./store";
+import propOr from "ramda/src/propOr";
 
+import { get, set } from "./store";
 import { media, Loading } from "./theme";
 import api from "./api";
 
@@ -82,16 +83,17 @@ export default class extends React.Component<Props, State> {
   }
 
   fetch() {
-    const cache = get(this.props.breed || "");
+    const breed = propOr("", "breed", this.props);
+    const cache = get(breed);
 
     if (cache) {
       this.setState({ data: cache });
     } else {
       this.setState({ loading: true });
-      fetch(api.breed(this.props.breed || ""))
+      fetch(api.breed(breed))
         .then(response => response.json())
         .then(data => {
-          this.props && this.props.breed && set(this.props.breed, data);
+          set(breed, data);
           this.setState({ data, loading: false });
         })
         .catch(error => this.setState({ error, loading: false }));

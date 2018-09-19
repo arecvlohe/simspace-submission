@@ -148,6 +148,34 @@ export default class extends React.Component<Props, State> {
     this.input.focus();
   };
 
+  handleFilterAndSort = (data: BreedsResponse) => {
+    return Object.keys(data.message)
+      .reduce((acc, breed) => {
+        if (data.message[breed].length) {
+          data.message[breed].forEach(variant => {
+            acc.push({ breed, variant });
+          });
+        }
+
+        acc.push({ breed, variant: undefined });
+
+        return acc;
+      }, [])
+      .filter(({ breed, variant }) => {
+        return `${variant || ""} ${breed}`
+          .trim()
+          .toLowerCase()
+          .includes(this.state.search.toLowerCase().trim());
+      })
+      .sort((a, b) => {
+        const breedA = getBreedName(a);
+        const breedB = getBreedName(b);
+
+        return breedA < breedB ? -1 : 1;
+      })
+      .slice(0, 12);
+  };
+
   render() {
     return (
       <Hotkeys keyName="/" onKeyUp={this.handleKeyUp}>
@@ -184,31 +212,7 @@ export default class extends React.Component<Props, State> {
                 );
 
               if (data) {
-                const filterAndSortBreeds = Object.keys(data.message)
-                  .reduce((acc, breed) => {
-                    if (data.message[breed].length) {
-                      data.message[breed].forEach(variant => {
-                        acc.push({ breed, variant });
-                      });
-                    }
-
-                    acc.push({ breed, variant: undefined });
-
-                    return acc;
-                  }, [])
-                  .filter(({ breed, variant }) => {
-                    return `${variant || ""} ${breed}`
-                      .trim()
-                      .toLowerCase()
-                      .includes(this.state.search.toLowerCase().trim());
-                  })
-                  .sort((a, b) => {
-                    const breedA = getBreedName(a);
-                    const breedB = getBreedName(b);
-
-                    return breedA < breedB ? -1 : 1;
-                  })
-                  .slice(0, 12);
+                const filterAndSortBreeds = this.handleFilterAndSort(data);
 
                 return (
                   <Grid4x3>
