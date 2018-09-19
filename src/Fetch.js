@@ -4,6 +4,8 @@ import "whatwg-fetch";
 
 import type { Node } from "react";
 
+import { get, set } from "./store";
+
 type Props = {
   url: string,
   children: ({
@@ -28,14 +30,23 @@ export default class extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    this.setState({ loading: true });
-    this.fetch();
+    const cache = get(this.props.url);
+
+    if (cache) {
+      this.setState({ data: cache, loading: false });
+    } else {
+      this.fetch();
+    }
   }
 
   fetch() {
+    this.setState({ loading: true });
     fetch(this.props.url, { method: "GET" })
       .then(response => response.json())
-      .then(data => this.setState({ data, loading: false }))
+      .then(data => {
+        set(this.props.url, data);
+        this.setState({ data, loading: false });
+      })
       .catch(error => this.setState({ error, loading: false }));
   }
 
