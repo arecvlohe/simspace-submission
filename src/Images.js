@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import LazyLoad from "react-lazyload";
-import propOr from "ramda/src/propOr";
+import { propOr } from "ramda";
 import styled, { keyframes } from "styled-components";
 
 import { get, set } from "./store";

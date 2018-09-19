@@ -94,6 +94,7 @@ const Grid4x3 = styled.div`
   `};
 `;
 
+// $FlowFixMe
 const BreedLink = styled(ActiveLink)`
   width: 100%;
   display: flex;
@@ -130,6 +131,13 @@ type State = {
   search: string
 };
 
+type FilterAndSortedObj = {
+  breed: string,
+  variant: ?string
+};
+
+type FilterAndSortedArr = FilterAndSortedObj[];
+
 export default class extends React.Component<Props, State> {
   state = {
     search: ""
@@ -149,7 +157,7 @@ export default class extends React.Component<Props, State> {
     this.input.focus();
   };
 
-  handleFilterAndSort = (data: BreedsResponse) => {
+  handleFilterAndSort = (data: BreedsResponse): FilterAndSortedArr => {
     return Object.keys(data.message)
       .reduce((acc, breed) => {
         if (data.message[breed].length) {
