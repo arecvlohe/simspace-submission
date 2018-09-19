@@ -153,11 +153,12 @@ export default class extends React.Component<Props, State> {
       <Hotkeys keyName="/" onKeyUp={this.handleKeyUp}>
         <Container>
           <HeaderLayout>
-            <Header>
+            <Header data-cy="header">
               <Link to="/">Dogs!</Link>
             </Header>
             <SearchWrapper>
               <SearchInput
+                data-cy="search"
                 innerRef={el => (this.input = el)}
                 placeholder="Search"
                 value={this.state.search}
@@ -220,6 +221,7 @@ export default class extends React.Component<Props, State> {
                         return (
                           <div key={`${breed}-${variant || ""}`}>
                             <BreedLink
+                              data-cy={variant ? `${breed}-${variant}` : breed}
                               to={variant ? `${breed}-${variant}` : breed}
                             >
                               {variant} {breed}

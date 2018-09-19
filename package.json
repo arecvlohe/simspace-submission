@@ -21,9 +21,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "flow": "flow"
+    "flow": "flow",
+    "cypress:open": "cypress open"
   },
   "devDependencies": {
+    "cypress": "^3.1.0",
     "flow-bin": "^0.81.0"
   }
 }
