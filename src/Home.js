@@ -1,13 +1,14 @@
 // @flow
 import React from "react";
-import styled from "styled-components";
 import { Router, Link } from "@reach/router";
 import Hotkeys from "react-hot-keys";
+import styled from "styled-components";
 
+import { media, Loading } from "./theme";
+import api from "./api";
 import Fetch from "./Fetch";
 import Images from "./Images";
-import api from "./api";
-import { media, Loading } from "./theme";
+import ErrorBoundary from "./ErrorBoundary";
 
 import type { RenderProps, BreedsResponse } from "./models";
 
@@ -178,72 +179,78 @@ export default class extends React.Component<Props, State> {
 
   render() {
     return (
-      <Hotkeys keyName="/" onKeyUp={this.handleKeyUp}>
-        <Container>
-          <HeaderLayout>
-            <Header data-cy="header">
-              <Link to="/">Dogs!</Link>
-            </Header>
-            <SearchWrapper>
-              <SearchInput
-                data-cy="search"
-                innerRef={el => (this.input = el)}
-                placeholder="Search"
-                value={this.state.search}
-                onChange={this.handleChange}
-              />
-            </SearchWrapper>
-          </HeaderLayout>
-          <Fetch url={api.all}>
-            {({ loading, error, data }: RenderProps<BreedsResponse>) => {
-              if (loading)
-                return (
-                  <Loading>
-                    <h3>Loading...</h3>
-                  </Loading>
-                );
+      <ErrorBoundary>
+        <Hotkeys keyName="/" onKeyUp={this.handleKeyUp}>
+          <Container>
+            <HeaderLayout>
+              <Header data-cy="header">
+                <Link to="/">Dogs!</Link>
+              </Header>
+              <SearchWrapper>
+                <SearchInput
+                  data-cy="search"
+                  innerRef={el => (this.input = el)}
+                  placeholder="Search"
+                  value={this.state.search}
+                  onChange={this.handleChange}
+                />
+              </SearchWrapper>
+            </HeaderLayout>
+            <Fetch url={api.all}>
+              {({ loading, error, data }: RenderProps<BreedsResponse>) => {
+                if (loading)
+                  return (
+                    <Loading>
+                      <h3>Loading...</h3>
+                    </Loading>
+                  );
 
-              if (error)
-                return (
-                  <div>
-                    <div>Sorry, there was an error :(</div>
-                    <div>{error}</div>
-                  </div>
-                );
+                if (error)
+                  return (
+                    <div>
+                      <h1>Sorry, there was an error.</h1>{" "}
+                      <span role="img" aria-label="sad face">
+                        😞
+                      </span>
+                    </div>
+                  );
 
-              if (data) {
-                const filterAndSortBreeds = this.handleFilterAndSort(data);
+                if (data) {
+                  const filterAndSortBreeds = this.handleFilterAndSort(data);
 
-                return (
-                  <Grid4x3>
-                    {filterAndSortBreeds.length < 1 ? (
-                      <NoSearchResultsWrapper>
-                        <h2>No breed matches found.</h2>
-                      </NoSearchResultsWrapper>
-                    ) : (
-                      filterAndSortBreeds.map(({ breed, variant }) => {
-                        return (
-                          <div key={`${breed}-${variant || ""}`}>
-                            <BreedLink
-                              data-cy={variant ? `${breed}-${variant}` : breed}
-                              to={variant ? `${breed}-${variant}` : breed}
-                            >
-                              {variant} {breed}
-                            </BreedLink>
-                          </div>
-                        );
-                      })
-                    )}
-                  </Grid4x3>
-                );
-              }
-            }}
-          </Fetch>
-          <Router>
-            <Images path=":breed" />
-          </Router>
-        </Container>
-      </Hotkeys>
+                  return (
+                    <Grid4x3>
+                      {filterAndSortBreeds.length < 1 ? (
+                        <NoSearchResultsWrapper>
+                          <h2>No breed matches found.</h2>
+                        </NoSearchResultsWrapper>
+                      ) : (
+                        filterAndSortBreeds.map(({ breed, variant }) => {
+                          return (
+                            <div key={`${breed}-${variant || ""}`}>
+                              <BreedLink
+                                data-cy={
+                                  variant ? `${breed}-${variant}` : breed
+                                }
+                                to={variant ? `${breed}-${variant}` : breed}
+                              >
+                                {variant} {breed}
+                              </BreedLink>
+                            </div>
+                          );
+                        })
+                      )}
+                    </Grid4x3>
+                  );
+                }
+              }}
+            </Fetch>
+            <Router>
+              <Images path=":breed" />
+            </Router>
+          </Container>
+        </Hotkeys>
+      </ErrorBoundary>
     );
   }
 }

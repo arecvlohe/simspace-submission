@@ -1,7 +1,6 @@
 // @flow
 import React from "react";
 import "whatwg-fetch";
-
 import type { Node } from "react";
 
 import { get, set } from "./store";

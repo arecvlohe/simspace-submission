@@ -1,8 +1,8 @@
 // @flow
 import React from "react";
-import styled, { keyframes } from "styled-components";
 import LazyLoad from "react-lazyload";
 import propOr from "ramda/src/propOr";
+import styled, { keyframes } from "styled-components";
 
 import { get, set } from "./store";
 import { media, Loading } from "./theme";
@@ -112,7 +112,15 @@ export default class extends React.Component<Props, State> {
         </Container>
       );
 
-    if (error) return <div>Sorry, there was an error :(</div>;
+    if (error)
+      return (
+        <Container>
+          <h1>Sorry, there was an error.</h1>{" "}
+          <span role="img" aria-label="sad face">
+            😞
+          </span>
+        </Container>
+      );
 
     if (data) {
       return (

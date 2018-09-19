@@ -3,8 +3,8 @@ import React, { Component } from "react";
 import { Router } from "@reach/router";
 import "normalize.css";
 
-import Home from "./Home";
 import { globalStyles } from "./theme";
+import Home from "./Home";
 
 globalStyles();
 
